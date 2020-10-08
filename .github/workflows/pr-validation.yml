@@ -1,0 +1,10 @@
+name: Pull Request validation Action workflow.
+on: [pull_request]
+jobs:
+    pr_validation_job:
+      runs-on: ubuntu-latest
+      name: A job to run test
+      steps:
+      - name: Run the script
+        id: test_script
+        uses: Brailor/instructure-ui@master
