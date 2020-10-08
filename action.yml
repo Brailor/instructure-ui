@@ -2,6 +2,6 @@
 name: 'PR Validation Action'
 runs:
   using: 'docker'
-  image: './docker/Dockerfile.test'
-  entrypoint: './docker/test'
+  image: 'docker/Dockerfile.test'
+  entrypoint: 'docker/test'
   
