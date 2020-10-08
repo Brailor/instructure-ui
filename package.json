@@ -111,12 +111,7 @@
     "*.js": "eslint",
     "*.css": "stylelint"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn husky:pre-commit",
-      "pre-push": "yarn husky:pre-push"
-    }
-  },
+  
   "browserslist": [
     "extends @instructure/browserslist-config-instui"
   ]
