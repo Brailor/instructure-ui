@@ -1,19 +1,15 @@
 name: 'Chromatic Deployment'
 
 on:
-  push:
-    branches: [v8]
-  pull_request:
-    branches: [v8]
+  label:
+    types: [created]
+    branch: [v8, feature/setup-vrt]
   workflow_dispatch:
 
 jobs:
   vrt-check:
+    if: github.event.label.name == 'approved'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Run the VRT script
-        env:
-          CHROMATIC_APP_CODE: ${{ secrets.CHROMATIC_APP_CODE }}
-        run: ./docker/vrt "$CHROMATIC_APP_CODE"
-        shell: bash
+        run: echo 'hello there'
