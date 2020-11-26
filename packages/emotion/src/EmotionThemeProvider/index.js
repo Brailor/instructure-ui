@@ -21,71 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import React from 'react'
+import { ThemeProvider } from 'emotion-theming'
+//repleace with our merge from util
+import merge from 'lodash.merge'
 
-.root {
-  height: 2.5em;
-  border-style: solid;
-  border-color: var(--borderColor);
-  box-sizing: border-box;
-  background-color: var(--background);
-  background-position: center;
-  background-size: cover;
-  background-clip: content-box;
-  background-repeat: no-repeat;
-  overflow: hidden;
-  line-height: 0;
-  text-align: center;
+function EmotionThemeProvider({ children, theme = {} }) {
+  //if fuction is given to theme prop, Emotion will repleace the theme with the return value
+  const getTheme = (theme) => (ancestorTheme = {}) => {
+    const themeName = ancestorTheme.key
+    const themeBasedOverride = theme?.themes?.[themeName]
+    const { themes, ...globalOverride } = theme
 
-  &.auto {
-    font-size: inherit;
-    border-width: var(--borderWidthSmall);
+    return merge(ancestorTheme, merge(globalOverride, themeBasedOverride))
   }
 
-  &.x-small {
-    font-size: 0.75rem;
-    border-width: var(--borderWidthSmall);
-  }
-
-  &.small {
-    font-size: 1rem;
-    border-width: var(--borderWidthSmall);
-  }
-
-  &.medium {
-    font-size: 1.25rem;
-    border-width: var(--borderWidthMedium);
-  }
-
-  &.large {
-    font-size: 1.5rem;
-    border-width: var(--borderWidthMedium);
-  }
-
-  &.x-large {
-    font-size: 1.75rem;
-    border-width: var(--borderWidthMedium);
-  }
+  return <ThemeProvider theme={getTheme(theme)}>{children}</ThemeProvider>
 }
 
-.initials {
-  color: var(--color);
-  line-height: 2.375em;
-  font-family: var(--fontFamily);
-  font-weight: var(--fontWeight);
-  letter-spacing: 0.0313em;
-}
-
-.loadImage {
-  display: none;
-}
-
-.circle {
-  width: 2.5em;
-  position: relative;
-  border-radius: 100%;
-  overflow: hidden;
-}
-
-.rectangle {
-  width: 3em;
-}
+export default EmotionThemeProvider
+export { EmotionThemeProvider }

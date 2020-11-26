@@ -22,71 +22,16 @@
  * SOFTWARE.
  */
 
-.root {
-  font-family: var(--fontFamily);
-  box-sizing: border-box;
-}
-
-.column {
-  flex-direction: column;
-}
-
-.column-reverse {
-  flex-direction: column-reverse;
-}
-
-.row {
-  flex-direction: row;
-}
-
-.row-reverse {
-  flex-direction: row-reverse;
-}
-
-.wrap--wrap {
-  flex-wrap: wrap;
-}
-
-.wrap--wrap-reverse {
-  flex-wrap: wrap-reverse;
-}
-
-.wrapItems {
-  flex-wrap: wrap;
-}
-
-.justifyItems--start {
-  justify-content: flex-start;
-}
-
-.justifyItems--end {
-  justify-content: flex-end;
-}
-
-.justifyItems--center {
-  justify-content: center;
-}
-
-.justifyItems--space-around {
-  justify-content: space-around;
-}
-
-.justifyItems--space-between {
-  justify-content: space-between;
-}
-
-.alignItems--center {
-  align-items: center;
-}
-
-.alignItems--start {
-  align-items: flex-start;
-}
-
-.alignItems--end {
-  align-items: flex-end;
-}
-
-.alignItems--stretch {
-  align-items: stretch;
+module.exports = {
+  presets: [
+    [
+      require('@instructure/ui-babel-preset'),
+      {
+        coverage: Boolean(process.env.COVERAGE),
+        esModules: Boolean(process.env.ES_MODULES),
+        removeConsole: process.env.NODE_ENV === 'production',
+        transformImports: Boolean(process.env.TRANSFORM_IMPORTS)
+      }
+    ]
+  ]
 }

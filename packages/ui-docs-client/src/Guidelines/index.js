@@ -26,7 +26,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import { themeable } from '@instructure/ui-themeable'
-import { Flex } from '@instructure/ui-flex'
+import { Flex, FlexItem } from '@instructure/ui-flex'
 
 import styles from './styles.css'
 import theme from './theme'
@@ -41,17 +41,13 @@ class Guidelines extends Component {
     children: null
   }
 
-  render () {
+  render() {
     return (
-      <Flex
-        wrap="wrap"
-        justifyItems="end"
-        alignItems="stretch"
-      >
-        {React.Children.map(this.props.children, child => (
-          <Flex.Item shouldGrow shouldShrink size="14rem" margin="xx-small">
+      <Flex wrap="wrap" justifyItems="end" alignItems="stretch">
+        {React.Children.map(this.props.children, (child) => (
+          <FlexItem shouldGrow shouldShrink size="14rem" margin="xx-small">
             {child}
-          </Flex.Item>
+          </FlexItem>
         ))}
       </Flex>
     )

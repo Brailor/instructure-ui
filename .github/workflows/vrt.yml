@@ -1,0 +1,15 @@
+name: 'Chromatic Deployment'
+
+on:
+  label:
+    types: [created]
+    branch: [v8, feature/setup-vrt, master]
+  workflow_dispatch:
+
+jobs:
+  vrt-check:
+    if: github.event.label.name == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run the VRT script
+        run: echo 'hello there'

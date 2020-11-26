@@ -24,21 +24,9 @@
 const { getPackageJSON } = require('@instructure/pkg-utils')
 const { error, info } = require('@instructure/command-utils')
 
-const { GERRIT_CHANGE_NUMBER, GERRIT_PATCHSET_NUMBER } = process.env
-const {
-  publishPackages,
-  createNPMRCFile
-} = require('./utils/npm')
-const {
-  checkIfGitTagExists,
-  checkIfCommitIsReviewed,
-  isReleaseCommit
-} = require('./utils/git')
-const { postGerritReview } = require('./utils/gerrit')
-const {
-  setupGit,
-  checkWorkingDirectory
-} = require('./utils/git')
+const { publishPackages, createNPMRCFile } = require('./utils/npm')
+const { checkIfGitTagExists, isReleaseCommit } = require('./utils/git')
+const { setupGit, checkWorkingDirectory } = require('./utils/git')
 const { getConfig } = require('./utils/config')
 
 try {
@@ -51,7 +39,7 @@ try {
   process.exit(1)
 }
 
-async function publish (packageName, currentVersion, preidAndTag, config = {}) {
+async function publish(packageName, currentVersion, preidAndTag, config = {}) {
   setupGit()
   createNPMRCFile(config)
   checkWorkingDirectory()
@@ -60,8 +48,9 @@ async function publish (packageName, currentVersion, preidAndTag, config = {}) {
 
   if (isReleaseCommit(currentVersion)) {
     checkIfGitTagExists(currentVersion)
-    checkIfCommitIsReviewed()
-    info(`📦  Currently on release commit for ${currentVersion} of ${packageName}.`)
+    info(
+      `📦  Currently on release commit for ${currentVersion} of ${packageName}.`
+    )
     versionToRelease = currentVersion
     tag = preidAndTag || 'latest'
   } else {
@@ -76,18 +65,5 @@ async function publish (packageName, currentVersion, preidAndTag, config = {}) {
   } catch (e) {
     error(e)
     process.exit(1)
-  }
-
-  if (GERRIT_CHANGE_NUMBER && GERRIT_PATCHSET_NUMBER) {
-    try {
-      await postGerritReview(
-        `${GERRIT_CHANGE_NUMBER},${GERRIT_PATCHSET_NUMBER}`,
-        `Successfully published ${releasedVersion} for this commit.`
-      )
-      process.exit(0)
-    } catch (e) {
-      error(e)
-      process.exit(1)
-    }
   }
 }

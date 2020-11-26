@@ -25,16 +25,16 @@
 import React from 'react'
 
 import { expect, mount, within, wait, stub } from '@instructure/ui-test-utils'
-import { Flex } from '../index'
+import { Flex, FlexItem } from '../index'
 
 describe('<Flex />', async () => {
-  it('should render Flex.Items as children', async () => {
+  it('should render FlexItems as children', async () => {
     const subject = await mount(
       <Flex>
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
-        <Flex.Item>Flex item 3</Flex.Item>
-        <Flex.Item>Flex item 4</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
+        <FlexItem>Flex item 3</FlexItem>
+        <FlexItem>Flex item 4</FlexItem>
       </Flex>
     )
 
@@ -54,20 +54,14 @@ describe('<Flex />', async () => {
   })
 
   it('should render children when children is a function', async () => {
-    const subject = await mount(
-      <Flex>
-        {() => <div>hello world</div>}
-      </Flex>
-    )
+    const subject = await mount(<Flex>{() => <div>hello world</div>}</Flex>)
 
     const flex = within(subject.getDOMNode())
     expect(await flex.findWithText('hello world')).to.exist()
   })
 
   it('should render no markup if there are no children', async () => {
-    const subject = await mount(
-      <Flex></Flex>
-    )
+    const subject = await mount(<Flex></Flex>)
 
     expect(subject.getDOMNode()).to.not.exist()
   })
@@ -75,10 +69,10 @@ describe('<Flex />', async () => {
   it('should accept width and height as props', async () => {
     const subject = await mount(
       <Flex width="400px" height="200px">
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
-        <Flex.Item>Flex item 3</Flex.Item>
-        <Flex.Item>Flex item 4</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
+        <FlexItem>Flex item 3</FlexItem>
+        <FlexItem>Flex item 4</FlexItem>
       </Flex>
     )
 
@@ -93,8 +87,8 @@ describe('<Flex />', async () => {
   it('should set flex-direction with the direction property', async () => {
     const subject = await mount(
       <Flex direction="column">
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
 
@@ -108,8 +102,8 @@ describe('<Flex />', async () => {
   it('should render an inline-flex container with the display property', async () => {
     const subject = await mount(
       <Flex display="inline-flex">
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
 
@@ -123,8 +117,8 @@ describe('<Flex />', async () => {
   it('should set align-items with the alignItems property', async () => {
     const subject = await mount(
       <Flex alignItems="start">
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
     const flex = within(subject.getDOMNode())
@@ -137,23 +131,25 @@ describe('<Flex />', async () => {
   it('should set justify-content with the justifyItems property', async () => {
     const subject = await mount(
       <Flex justifyItems="space-between">
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
 
     const flex = within(subject.getDOMNode())
 
     await wait(() => {
-      expect(flex.getComputedStyle()['justify-content']).to.equal('space-between')
+      expect(flex.getComputedStyle()['justify-content']).to.equal(
+        'space-between'
+      )
     })
   })
 
   it('should set flex-wrap with the wrap property', async () => {
     const subject = await mount(
       <Flex wrap="wrap">
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
 
@@ -164,11 +160,11 @@ describe('<Flex />', async () => {
     })
   })
 
-  it('should let Flex.Items align themselves with the align property', async () => {
+  it('should let FlexItems align themselves with the align property', async () => {
     const subject = await mount(
       <Flex alignItems="end">
-        <Flex.Item align="stretch">Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem align="stretch">Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
 
@@ -181,11 +177,11 @@ describe('<Flex />', async () => {
     })
   })
 
-  it('should let Flex.Items flex-grow with the shouldGrow property', async () => {
+  it('should let FlexItems flex-grow with the shouldGrow property', async () => {
     const subject = await mount(
       <Flex>
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item shouldGrow>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem shouldGrow>Flex item 2</FlexItem>
       </Flex>
     )
 
@@ -199,11 +195,11 @@ describe('<Flex />', async () => {
     })
   })
 
-  it('should let Flex.Items flex-shrink with the shouldShrink property', async () => {
+  it('should let FlexItems flex-shrink with the shouldShrink property', async () => {
     const subject = await mount(
       <Flex>
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item shouldShrink>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem shouldShrink>Flex item 2</FlexItem>
       </Flex>
     )
 
@@ -217,12 +213,12 @@ describe('<Flex />', async () => {
     })
   })
 
-  it('should set flex-basis and min-width on Flex.Items with the size property', async () => {
+  it('should set flex-basis and min-width on FlexItems with the size property', async () => {
     const subject = await mount(
       <Flex>
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
-        <Flex.Item size="100px">Flex item 3</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
+        <FlexItem size="100px">Flex item 3</FlexItem>
       </Flex>
     )
 
@@ -241,7 +237,7 @@ describe('<Flex />', async () => {
     const elementRef = stub()
     const subject = await mount(
       <Flex elementRef={elementRef}>
-        <Flex.Item>Flex item</Flex.Item>
+        <FlexItem>Flex item</FlexItem>
       </Flex>
     )
 
@@ -253,8 +249,8 @@ describe('<Flex />', async () => {
   it('should meet a11y standards', async () => {
     const subject = await mount(
       <Flex>
-        <Flex.Item>Flex item 1</Flex.Item>
-        <Flex.Item>Flex item 2</Flex.Item>
+        <FlexItem>Flex item 1</FlexItem>
+        <FlexItem>Flex item 2</FlexItem>
       </Flex>
     )
 

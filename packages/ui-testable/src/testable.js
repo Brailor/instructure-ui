@@ -22,73 +22,133 @@
  * SOFTWARE.
  */
 
+import React, { useEffect, useState, useRef } from 'react'
 import { findDOMNode } from 'react-dom'
 
 import { decorator } from '@instructure/ui-decorator'
 
-
-const testable = (
-  process.env.NODE_ENV === 'production' &&
+const APPEND_DATA_ATTRIBUTE =
+  process.env.NODE_ENV !== 'production' ||
   // If you would like to the `data-cid` attributes on elements even in your
   // production builds (like if you are using them in your e2e builds or
   // something), you need to set the environment variable
   // ALWAYS_APPEND_UI_TESTABLE_LOCATORS=1
   // We do this because adding those `data-cid` locators slows things down.
-  !process.env.ALWAYS_APPEND_UI_TESTABLE_LOCATORS
-) ? () => (Component => Component) : decorator((ComposedComponent) => {
+  process.env.ALWAYS_APPEND_UI_TESTABLE_LOCATORS
 
-  const displayName = ComposedComponent.displayName || ComposedComponent.name
-  const locator = {
-    attribute: 'data-cid',
-    value: displayName
-  }
-  const selector = `[${locator.attribute}~="${locator.value}"]`
-  class TestableComponent extends ComposedComponent {
-    static selector = selector
-    componentDidMount (...args) {
-      if (super.componentDidMount) {
-        super.componentDidMount(...args)
+const withTestable = !APPEND_DATA_ATTRIBUTE
+  ? (ComposedComponent) => ComposedComponent
+  : (ComposedComponent) => {
+      const displayName =
+        ComposedComponent.displayName || ComposedComponent.name
+      const locator = {
+        attribute: 'data-cid',
+        value: displayName
       }
-      this.appendLocatorAttribute()
-    }
-    componentDidUpdate (...args) {
-      if (super.componentDidUpdate) {
-        super.componentDidUpdate(...args)
-      }
-      this.appendLocatorAttribute()
-    }
-    componentWillUnmount (...args) {
-      this._testableUnmounted = true
-      if (super.componentWillUnmount) {
-        super.componentWillUnmount(...args)
-      }
-      clearTimeout(this.locatorTimeout)
-    }
-    appendLocatorAttribute () {
-      this.locatorTimeout = setTimeout(() => {
-        let node
-        if (this._testableUnmounted) {
-          return
+      const selector = `[${locator.attribute}~="${locator.value}"]`
+
+      const TestableComponent = (props) => {
+        const [_testableUnmounted, setTestableUnmounted] = useState(false)
+        const locatorTimeoutRef = useRef()
+        const nodeRef = useRef()
+
+        const handleElementRef = (ref) => {
+          nodeRef.current = ref
         }
-        try {
-          // Use this.DOMNode for components that render as non-native Portals...
-          node = this.DOMNode || findDOMNode(this)
-        } catch (e) {
-          console.warn(`[ui-testable] Could not append locator attribute: ${e}`)
+
+        const appendLocatorAttribute = () => {
+          locatorTimeoutRef.current = setTimeout(() => {
+            if (_testableUnmounted) {
+              return
+            }
+            if (nodeRef.current?.getAttribute) {
+              const attribute = nodeRef.current.getAttribute(locator.attribute)
+              const values =
+                typeof attribute === 'string' ? attribute.split(/\s+/) : []
+              if (!values.includes(locator.value)) {
+                values.push(locator.value)
+              }
+              nodeRef.current.setAttribute(locator.attribute, values.join(' '))
+            }
+          })
         }
-        if (node?.getAttribute) {
-          const attribute = node.getAttribute(locator.attribute)
-          const values = typeof attribute === 'string' ? attribute.split(/\s+/) : []
-          if (!values.includes(locator.value)) {
-            values.push(locator.value)
+
+        useEffect(() => {
+          appendLocatorAttribute()
+          return () => {
+            setTestableUnmounted(true)
+            clearTimeout(locatorTimeoutRef.current)
           }
-          node.setAttribute(locator.attribute, values.join(' '))
-        }
-      })
+        })
+
+        return <ComposedComponent elementRef={handleElementRef} {...props} />
+      }
+
+      TestableComponent.selector = selector
+      TestableComponent.displayName = displayName
+
+      return TestableComponent
     }
-  }
-  return TestableComponent
-})
+
+const testable = !APPEND_DATA_ATTRIBUTE
+  ? () => (Component) => Component
+  : decorator((ComposedComponent) => {
+      const displayName =
+        ComposedComponent.displayName || ComposedComponent.name
+      const locator = {
+        attribute: 'data-cid',
+        value: displayName
+      }
+      const selector = `[${locator.attribute}~="${locator.value}"]`
+      class TestableComponent extends ComposedComponent {
+        static selector = selector
+        componentDidMount(...args) {
+          if (super.componentDidMount) {
+            super.componentDidMount(...args)
+          }
+          this.appendLocatorAttribute()
+        }
+        componentDidUpdate(...args) {
+          if (super.componentDidUpdate) {
+            super.componentDidUpdate(...args)
+          }
+          this.appendLocatorAttribute()
+        }
+        componentWillUnmount(...args) {
+          this._testableUnmounted = true
+          if (super.componentWillUnmount) {
+            super.componentWillUnmount(...args)
+          }
+          clearTimeout(this.locatorTimeout)
+        }
+        appendLocatorAttribute() {
+          this.locatorTimeout = setTimeout(() => {
+            let node
+            if (this._testableUnmounted) {
+              return
+            }
+            try {
+              // Use this.DOMNode for components that render as non-native Portals...
+              node = this.DOMNode || findDOMNode(this)
+            } catch (e) {
+              console.warn(
+                `[ui-testable] Could not append locator attribute: ${e}`
+              )
+            }
+            if (node?.getAttribute) {
+              const attribute = node.getAttribute(locator.attribute)
+              const values =
+                typeof attribute === 'string' ? attribute.split(/\s+/) : []
+              if (!values.includes(locator.value)) {
+                values.push(locator.value)
+              }
+              node.setAttribute(locator.attribute, values.join(' '))
+            }
+          })
+        }
+      }
+      return TestableComponent
+    })
 
 export default testable
-export { testable }
+export { testable, withTestable }

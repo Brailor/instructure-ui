@@ -24,42 +24,39 @@
 
 import { expect } from '@instructure/ui-test-utils'
 import { contrast } from '@instructure/ui-color-utils'
+import { canvas, canvasHighContrast } from '@instructure/ui-themes'
 
-import { Spinner } from '../index'
+import generateComponentTheme from '../theme'
 
 describe('Spinner.theme', () => {
-  describe('with the default theme', () => {
-    const variables = Spinner.generateTheme()
+  describe('with canvas theme', () => {
+    const variables = generateComponentTheme(canvas)
 
     describe('default', () => {
       it('should ensure meter color and track color meet 3:1 contrast', () => {
-        expect(contrast(variables.color, variables.trackColor))
-          .to.be.above(3)
+        expect(contrast(variables.color, variables.trackColor)).to.be.above(3)
       })
     })
 
     describe('inverse', () => {
       it('should ensure meter color and track color meet 3:1 contrast', () => {
-        expect(contrast(variables.color, variables.trackColor))
-          .to.be.above(3)
+        expect(contrast(variables.color, variables.trackColor)).to.be.above(3)
       })
     })
   })
 
   describe('with the "canvas-high-contrast" theme', () => {
-    const variables = Spinner.generateTheme('canvas-high-contrast')
+    const variables = generateComponentTheme(canvasHighContrast)
 
     describe('default', () => {
       it('should ensure meter color and track color meet 4.5:1 contrast', () => {
-        expect(contrast(variables.color, variables.trackColor))
-          .to.be.above(4.5)
+        expect(contrast(variables.color, variables.trackColor)).to.be.above(4.5)
       })
     })
 
     describe('inverse', () => {
       it('should ensure meter color and track color meet 4.5:1 contrast', () => {
-        expect(contrast(variables.color, variables.trackColor))
-          .to.be.above(4.5)
+        expect(contrast(variables.color, variables.trackColor)).to.be.above(4.5)
       })
     })
   })

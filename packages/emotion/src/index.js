@@ -21,16 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
-import { createThemeAdapter } from '@instructure/ui-themeable'
-
-const map = {
-  borderColorDefault: 'borderColorPrimary',
-  borderColorInverse: 'borderColorTransparent',
-  colorInverse: 'colorPrimaryInverse',
-  background: 'backgroundPrimary',
-  backgroundLight: 'backgroundSecondary',
-  backgroundInverse: 'backgroundPrimaryInverse'
-}
-
-export const themeAdapter = createThemeAdapter({ map, version: '8.0.0' })
+export { jsx, css, keyframes } from '@emotion/core'
+export { EmotionThemeProvider } from './EmotionThemeProvider'
+export { useStyle, useTheme } from './useStyle'

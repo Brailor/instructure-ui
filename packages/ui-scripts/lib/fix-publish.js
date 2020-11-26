@@ -22,12 +22,17 @@
  * SOFTWARE.
  */
 const { getPackageJSON, getPackages } = require('@instructure/pkg-utils')
-const { error, info, runCommandSync, runCommandAsync, confirm } = require('@instructure/command-utils')
+const {
+  error,
+  info,
+  runCommandSync,
+  runCommandAsync,
+  confirm
+} = require('@instructure/command-utils')
 
 const { getConfig } = require('./utils/config')
 const {
   checkWorkingDirectory,
-  checkIfCommitIsReviewed,
   isReleaseCommit,
   setupGit
 } = require('./utils/git')
@@ -37,27 +42,33 @@ try {
   const pkgJSON = getPackageJSON()
   // optional version argument
   // ui-scripts --fix-publish 5.12.2
-  fixPublish(pkgJSON.name, pkgJSON.version, process.argv[3] || pkgJSON.version, getConfig(pkgJSON))
+  fixPublish(
+    pkgJSON.name,
+    pkgJSON.version,
+    process.argv[3] || pkgJSON.version,
+    getConfig(pkgJSON)
+  )
 } catch (err) {
   error(err)
   process.exit(1)
 }
 
-async function fixPublish (packageName, currentVersion, releaseVersion, config = {}) {
-  const npmTag = (currentVersion === releaseVersion) ? 'latest' : 'rc'
+async function fixPublish(
+  packageName,
+  currentVersion,
+  releaseVersion,
+  config = {}
+) {
+  const npmTag = currentVersion === releaseVersion ? 'latest' : 'rc'
 
   setupGit()
   createNPMRCFile(config)
 
   checkWorkingDirectory()
 
-  if (currentVersion === releaseVersion) {
-    if (isReleaseCommit(releaseVersion)) {
-      checkIfCommitIsReviewed()
-    } else {
-      error('Latest release should be run from a merged version bump commit!')
-      process.exit(1)
-    }
+  if (currentVersion === releaseVersion && !isReleaseCommit(releaseVersion)) {
+    error('Latest release should be run from a merged version bump commit!')
+    process.exit(1)
   }
 
   info(`📦  Version: ${releaseVersion}, Tag: ${npmTag}`)
@@ -66,30 +77,43 @@ async function fixPublish (packageName, currentVersion, releaseVersion, config =
     process.exit(0)
   }
 
-  return Promise.all(getPackages().map(async pkg => {
-    if (pkg.private) {
-      info(`${pkg.name} is private.`)
-    } else {
-
-      let packageInfo = { versions: [] }
-
-      try {
-        const { stdout } = runCommandSync('npm', ['info', pkg.name, '--json'], [], { stdio: 'pipe' })
-        packageInfo = JSON.parse(stdout)
-      } catch (e) {
-        error(e)
-      }
-
-      if (packageInfo.versions.includes(currentVersion)) {
-        info(`📦  v${currentVersion} of ${pkg.name} is already published!`)
+  return Promise.all(
+    getPackages().map(async (pkg) => {
+      if (pkg.private) {
+        info(`${pkg.name} is private.`)
       } else {
+        let packageInfo = { versions: [] }
+
         try {
-          await runCommandAsync('npm', ['publish', pkg.location, '--tag', npmTag])
-          info(`📦  Version ${releaseVersion} of ${packageName} was successfully published!`)
-        } catch (err) {
-          error(err)
+          const { stdout } = runCommandSync(
+            'npm',
+            ['info', pkg.name, '--json'],
+            [],
+            { stdio: 'pipe' }
+          )
+          packageInfo = JSON.parse(stdout)
+        } catch (e) {
+          error(e)
+        }
+
+        if (packageInfo.versions.includes(currentVersion)) {
+          info(`📦  v${currentVersion} of ${pkg.name} is already published!`)
+        } else {
+          try {
+            await runCommandAsync('npm', [
+              'publish',
+              pkg.location,
+              '--tag',
+              npmTag
+            ])
+            info(
+              `📦  Version ${releaseVersion} of ${packageName} was successfully published!`
+            )
+          } catch (err) {
+            error(err)
+          }
         }
       }
-    }
-  }))
+    })
+  )
 }

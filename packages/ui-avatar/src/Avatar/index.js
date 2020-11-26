@@ -21,17 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import React, { Component } from 'react'
+
+/** @jsx jsx */
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import classnames from 'classnames'
-
+import { useStyle, jsx } from '@instructure/emotion'
+import { ThemeablePropTypes } from '@instructure/ui-themeable'
 import { View } from '@instructure/ui-view'
-import { themeable, ThemeablePropTypes } from '@instructure/ui-themeable'
-import { passthroughProps, deprecated } from '@instructure/ui-react-utils'
-import { testable } from '@instructure/ui-testable'
-
-import styles from './styles.css'
-import theme from './theme'
+import { withTestable } from '@instructure/ui-testable'
+import { useDeprecated, passthroughProps } from '@instructure/ui-react-utils'
+import generateStyle from './styles'
 
 /**
 ---
@@ -39,141 +38,153 @@ category: components
 ---
 **/
 
-@testable()
-@deprecated('8.0.0', {
-  inline: 'display',
-  variant: 'shape'
-})
-@themeable(theme, styles)
-class Avatar extends Component {
-  static propTypes = {
-    name: PropTypes.string.isRequired,
-    /*
-    * URL of the image to display as the background image
-    */
-    src: PropTypes.string,
-    /*
-    * Accessible label
-    */
-    alt: PropTypes.string,
-    size: PropTypes.oneOf(['auto', 'x-small', 'small', 'medium', 'large', 'x-large']),
-    shape: PropTypes.oneOf(['circle', 'rectangle']),
-    /**
-    * Valid values are `0`, `none`, `auto`, `xxx-small`, `xx-small`, `x-small`,
-    * `small`, `medium`, `large`, `x-large`, `xx-large`. Apply these values via
-    * familiar CSS-like shorthand. For example: `margin="small auto large"`.
-    */
-    margin: ThemeablePropTypes.spacing,
-    display: PropTypes.oneOf(['inline-block', 'block']),
-    /**
-    * Callback fired when the avatar image has loaded
-    */
-    onImageLoaded: PropTypes.func,
-    /**
-    * the element type to render as
-    */
-    as: PropTypes.elementType, // eslint-disable-line react/require-default-props
-    /**
-    * provides a reference to the underlying html element
-    */
-    elementRef: PropTypes.func,
-    /* eslint-disable react/require-default-props */
-    /**
-    * __Deprecated - use `display`__
-    */
-    inline: PropTypes.bool,
-    /**
-     * __Deprecated - use `shape`__
-     */
-    variant: PropTypes.oneOf(['circle', 'rectangle'])
-    /* eslint-enable react/require-default-props */
-  }
+const Avatar = (props) => {
+  useDeprecated({
+    componentName: Avatar.name,
+    version: '8.0',
+    oldProps: {
+      inline: 'display',
+      variant: 'shape'
+    },
+    props
+  })
 
-  static defaultProps = {
-    src: undefined,
-    alt: undefined,
-    margin: undefined,
-    elementRef: undefined,
-    size: 'medium',
-    shape: 'circle',
-    display: 'inline-block',
-    onImageLoaded: (event) => {}
-  }
+  const [loaded, setLoaded] = useState(false)
+  const { onImageLoaded, ...restProps } = props
 
-  state = { loaded: false }
+  const styles = useStyle(Avatar.name, generateStyle, props, { loaded })
 
-  makeInitialsFromName () {
-    let name = this.props.name
-
-    if (!name || typeof name !== 'string') {
-      return
-    }
-    name = name.trim()
-    if (name.length === 0) {
-      return
-    }
-
-    if (name.match(/\s+/)) {
-      const names = name.split(/\s+/)
-      return (names[0][0] + names[names.length - 1][0]).toUpperCase()
-    } else {
-      return name[0].toUpperCase()
-    }
-  }
-
-  handleImageLoaded = (event) => {
-    this.setState({ loaded: true })
-    this.props.onImageLoaded(event)
-  }
-
-  renderLoadImage () {
+  const renderLoadImage = () => {
     // This image element is visually hidden and is here for loading purposes only
     return (
       <img
-        src={this.props.src}
-        className={styles.loadImage}
-        alt={this.props.alt}
-        onLoad={this.handleImageLoaded}
+        src={props.src}
+        css={styles.loadImage}
+        alt={props.alt}
+        onLoad={handleImageLoaded}
         aria-hidden="true"
       />
     )
   }
 
-  renderInitials () {
+  const handleImageLoaded = (event) => {
+    setLoaded(true)
+    onImageLoaded(event)
+  }
+
+  const renderInitials = () => {
     return (
-      <span className={styles.initials} aria-hidden="true">
-        {this.makeInitialsFromName()}
+      <span css={styles.initials} aria-hidden="true">
+        {makeInitialsFromName()}
       </span>
     )
   }
 
-  render () {
-    const { onImageLoaded, ...props } = this.props
+  const makeInitialsFromName = () => {
+    let nameForInitials = props.name
 
-    return (
-      <View
-        {...passthroughProps(props)}
-        style={{
-          backgroundImage: this.state.loaded ? `url('${this.props.src}')` : undefined
-        }}
-        className={classnames({
-          [styles.root]: true,
-          [styles[this.props.size]]: true,
-          [styles[this.props.variant || this.props.shape]]: true
-        })}
-        aria-label={this.props.alt ? this.props.alt : null}
-        role={this.props.alt ? 'img' : null}
-        as={this.props.as}
-        elementRef={this.props.elementRef}
-        margin={this.props.margin}
-        display={(this.props.display === 'block' || this.props.inline === false) ? 'block' : 'inline-block'}
-      >
-        {this.renderLoadImage()}
-        {!this.state.loaded && this.renderInitials()}
-      </View>
-    )
+    if (!nameForInitials || typeof nameForInitials !== 'string') {
+      return
+    }
+    nameForInitials = nameForInitials.trim()
+    if (nameForInitials.length === 0) {
+      return
+    }
+
+    if (nameForInitials.match(/\s+/)) {
+      const names = nameForInitials.split(/\s+/)
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase()
+    } else {
+      return nameForInitials[0].toUpperCase()
+    }
   }
+
+  return (
+    <View
+      {...passthroughProps(restProps)}
+      css={styles.root}
+      aria-label={props.alt ? props.alt : null}
+      role={props.alt ? 'img' : null}
+      as={props.as}
+      elementRef={props.elementRef}
+      margin={props.margin}
+      display={
+        props.display === 'block' || props.inline === false
+          ? 'block'
+          : 'inline-block'
+      }
+    >
+      {renderLoadImage()}
+      {!loaded && renderInitials()}
+    </View>
+  )
 }
 
-export default Avatar
-export { Avatar }
+Avatar.propTypes = {
+  name: PropTypes.string.isRequired,
+  /*
+   * URL of the image to display as the background image
+   */
+  src: PropTypes.string,
+  /*
+   * Accessible label
+   */
+  alt: PropTypes.string,
+  size: PropTypes.oneOf([
+    'auto',
+    'x-small',
+    'small',
+    'medium',
+    'large',
+    'x-large'
+  ]),
+  shape: PropTypes.oneOf(['circle', 'rectangle']),
+  /**
+   * Valid values are `0`, `none`, `auto`, `xxx-small`, `xx-small`, `x-small`,
+   * `small`, `medium`, `large`, `x-large`, `xx-large`. Apply these values via
+   * familiar CSS-like shorthand. For example: `margin="small auto large"`.
+   */
+  margin: ThemeablePropTypes.spacing,
+  display: PropTypes.oneOf(['inline-block', 'block']),
+  /**
+   * Callback fired when the avatar image has loaded
+   */
+  onImageLoaded: PropTypes.func,
+  /**
+   * the element type to render as
+   */
+  as: PropTypes.elementType, // eslint-disable-line react/require-default-props
+  /**
+   * provides a reference to the underlying html element
+   */
+  elementRef: PropTypes.func,
+  /* eslint-disable react/require-default-props */
+  /**
+   * __Deprecated - use `display`__
+   */
+  inline: PropTypes.bool,
+  /**
+   * __Deprecated - use `shape`__
+   */
+  variant: PropTypes.oneOf(['circle', 'rectangle']),
+  /* eslint-enable react/require-default-props */
+  themeOverride: PropTypes.object
+}
+
+Avatar.defaultProps = {
+  src: undefined,
+  alt: undefined,
+  margin: undefined,
+  elementRef: undefined,
+  size: 'medium',
+  shape: 'circle',
+  display: 'inline-block',
+  onImageLoaded: () => {},
+  themeOverride: {}
+}
+
+//TODO: remove this HOC call when we implement a new testing solution
+const Avatar__Testable = withTestable(Avatar)
+
+export default Avatar__Testable
+export { Avatar__Testable as Avatar }

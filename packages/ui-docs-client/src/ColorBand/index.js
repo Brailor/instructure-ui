@@ -26,7 +26,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames'
 
-import { Flex } from '@instructure/ui-flex'
+import { Flex, FlexItem } from '@instructure/ui-flex'
 import { View } from '@instructure/ui-view'
 import { themeable } from '@instructure/ui-themeable'
 
@@ -43,7 +43,7 @@ class ColorBand extends Component {
     height: '1.25rem'
   }
 
-  render () {
+  render() {
     return (
       <View
         display="block"
@@ -52,30 +52,30 @@ class ColorBand extends Component {
         height={this.props.height}
       >
         <Flex height="100%" alignItems="stretch" justifyItems="end">
-          <Flex.Item size="7%">
-            <span className={
-              classnames({
+          <FlexItem size="7%">
+            <span
+              className={classnames({
                 [styles.tile]: true,
                 [styles.colorAlert]: true
-              })
-            }></span>
-          </Flex.Item>
-          <Flex.Item size="10%">
-            <span className={
-              classnames({
+              })}
+            ></span>
+          </FlexItem>
+          <FlexItem size="10%">
+            <span
+              className={classnames({
                 [styles.tile]: true,
                 [styles.colorWarning]: true
-              })
-            }></span>
-          </Flex.Item>
-          <Flex.Item size="15%">
-            <span className={
-              classnames({
+              })}
+            ></span>
+          </FlexItem>
+          <FlexItem size="15%">
+            <span
+              className={classnames({
                 [styles.tile]: true,
                 [styles.colorDanger]: true
-              })
-            }></span>
-          </Flex.Item>
+              })}
+            ></span>
+          </FlexItem>
         </Flex>
       </View>
     )

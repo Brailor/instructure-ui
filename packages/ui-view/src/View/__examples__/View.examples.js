@@ -23,14 +23,11 @@
  */
 import { ThemeablePropValues } from '@instructure/ui-themeable'
 
-const {
-  SHADOW_TYPES,
-  BORDER_WIDTHS,
-  BORDER_RADII
-} = ThemeablePropValues
+const { SHADOW_TYPES, BORDER_WIDTHS, BORDER_RADII } = ThemeablePropValues
 
 export default {
   sectionProp: 'background',
+  maxExamplesPerPage: 10,
   propValues: {
     shadow: [undefined, ...Object.values(SHADOW_TYPES)],
     borderWidth: [...Object.values(BORDER_WIDTHS)],
@@ -51,16 +48,26 @@ export default {
       shouldAnimateFocus: false
     }
   },
-  excludeProps: ['padding', 'shouldAnimateFocus', 'display', 'withVisualDebug', 'focusColor', 'focusPosition', 'borderColor', 'overflowX', 'overflowY'],
+  excludeProps: [
+    'padding',
+    'shouldAnimateFocus',
+    'display',
+    'withVisualDebug',
+    'focusColor',
+    'focusPosition',
+    'borderColor',
+    'overflowX',
+    'overflowY'
+  ],
   filter: (props) => {
     return (
       // Border radius and border width list 0 in addition to none in their object values
       // so we filter those here as they are redundant
-      (
-        props.borderRadius === 'none' || props.borderWidth === 'none' || props.background === 'transparent' ||
-        (props.focusPosition === 'inset' && !props.withFocusOutline) ||
-        (props.withFocusOutline && props.position !== 'relative')
-      )
+      props.borderRadius === 'none' ||
+      props.borderWidth === 'none' ||
+      props.background === 'transparent' ||
+      (props.focusPosition === 'inset' && !props.withFocusOutline) ||
+      (props.withFocusOutline && props.position !== 'relative')
     )
   }
 }
