@@ -3,7 +3,7 @@ name: 'Chromatic Deployment'
 on:
   label:
     types: [created]
-    branch: [v8, feature/setup-vrt]
+    branch: [v8, feature/setup-vrt, master]
   workflow_dispatch:
 
 jobs:
