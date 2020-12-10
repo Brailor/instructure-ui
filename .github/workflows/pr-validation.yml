@@ -1,10 +1,11 @@
 name: Pull Request validation Action workflow.
-on: [pull_request]
+on: [pull_request, push]
 jobs:
-    pr_validation_job:
+    pr_validation:
       runs-on: ubuntu-latest
-      name: A job to run test
+      name: A job to run test.
       steps:
-      - name: Run the script
+      - uses: actions/checkout@v2
+      - name: Run docker test script.
         id: test_script
-        uses: Brailor/instructure-ui@master
+        run: ./docker/test
