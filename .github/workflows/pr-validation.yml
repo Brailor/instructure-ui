@@ -7,4 +7,4 @@ jobs:
       steps:
       - name: Run docker test script
         id: test_script
-        runs: ./docker/test
+        run: ./docker/test
