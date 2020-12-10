@@ -5,6 +5,7 @@ jobs:
       runs-on: ubuntu-latest
       name: A job to run test
       steps:
+      - uses: actions/checkout@v2
       - name: Run docker test script
         id: test_script
         run: ./docker/test
