@@ -7,8 +7,7 @@ jobs:
       steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 2
-      - run: git checkout HEAD^
+          fetch-depth: 0
       - name: Run docker test script.
         id: test_script
         run: ./docker/test
