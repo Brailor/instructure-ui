@@ -1,17 +1,31 @@
-name: 'Chromatic Deployment'
+# .github/workflows/chromatic.yml
 
-on: [pull_request]
-
+# Other configuration required
+name: Chromatic check.
+on: [push]
 jobs:
-  vrt-check:
+  chromatic-deployment:
     runs-on: ubuntu-latest
-    name: Chromatic Visual Regression check.
     steps:
-      - uses: actions/checkout@v2
+        # 👇 Version 2 of the action
+      - name: Checkout repository
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 0
-      - name: Run the VRT script
-        env:
-          CHROMATIC_APP_CODE: ${{ secrets.CHROMATIC_APP_CODE }}
-        run: ./docker/vrt "$CHROMATIC_APP_CODE"
-        shell: bash
+          fetch-depth: 0 # 👈 Required to retrieve git history
+      - name: Install Node 10
+        uses: actions/setup-node@v2
+        with:
+            node-version: '10'
+      - name: Install dependencies
+        run: yarn
+      - name: Build dependencies
+        run: yarn bootstrap
+        # 👇 Adds Chromatic as a step in the workflow
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        # Options required to the GitHub Chromatic Action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 👇 Chromatic projectToken, refer to the manage page to obtain it.
+          projectToken: ${{ secrets.CHROMATIC_APP_TOKEN }}
+          exitZeroOnChanges: true
