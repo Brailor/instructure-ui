@@ -1,0 +1,12 @@
+[build]
+  publish = "packages/__docs__/__build__"
+  # command = "yarn bootstrap:docs && yarn build:docs"
+
+[context.production]
+  ignore = "git diff HEAD master --quiet --exit-code"
+  command = "echo 'production deploy'"
+
+[context.deploy-preview]
+  ignore = "git diff HEAD next --quiet --exit-code"
+  command = "echo 'deploy-preview'"
+
