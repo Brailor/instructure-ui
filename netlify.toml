@@ -3,7 +3,7 @@
   # command = "yarn bootstrap:docs && yarn build:docs"
 
 [context.production]
-  #
+  #hello
   ignore = "git diff HEAD master --quiet --exit-code"
   command = "echo 'production deploy'"
 
