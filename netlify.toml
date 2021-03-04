@@ -8,7 +8,7 @@
   command = "echo 'production deploy'"
 
 [context.deploy-preview]
-  #
+  #aasdfasdfsd
   ignore = "git diff HEAD next --quiet --exit-code"
   command = "echo 'deploy-preview'"
 
