@@ -1,5 +1,5 @@
 [build]
-  publish = "packages/__docs__/__build__"
+  # publish = "packages/__docs__/__build__"
   # command = "yarn bootstrap:docs && yarn build:docs"
 
 [context.production]
