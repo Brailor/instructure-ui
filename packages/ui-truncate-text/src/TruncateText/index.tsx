@@ -229,11 +229,10 @@ class TruncateText extends Component<Props> {
   }
 
   checkChildren() {
-    // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
     error(
       !(() => {
         let isTooDeep = false
-        const text = ensureSingleChild(this.props.children)
+        const text = ensureSingleChild(this.props.children)!
         React.Children.forEach(text.props.children, (child) => {
           if (child.props) {
             React.Children.forEach(child.props.children, (grandChild) => {

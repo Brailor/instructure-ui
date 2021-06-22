@@ -209,7 +209,6 @@ class Dialog extends Component<Props> {
 
   focus() {
     if (!this.props.open || !this.contentElement) {
-      // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
       error(false, "[Dialog] Can't focus a Dialog that isn't open.")
       return
     }
@@ -222,7 +221,6 @@ class Dialog extends Component<Props> {
 
   blur() {
     if (!this.props.open || !this.contentElement) {
-      // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
       error(false, "[Dialog] Can't blur a Dialog that isn't open.")
       return
     }
@@ -257,12 +255,9 @@ class Dialog extends Component<Props> {
   }
 
   render() {
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
     const ElementType = getElementType(Dialog, this.props)
     return this.props.open ? (
-      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: ReactNode; ref: (el: any) => voi... Remove this comment to see the full error message
       <ElementType
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
         {...omitProps(this.props, Dialog.propTypes)}
         ref={this.getRef}
         role={this.props.label ? 'dialog' : null}

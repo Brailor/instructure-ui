@@ -129,14 +129,13 @@ class Spinner extends Component<Props> {
   render() {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'omitViewProps' does not exist on type 't... Remove this comment to see the full error message
     const passthroughProps = View.omitViewProps(
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
       omitProps(this.props, Spinner.propTypes),
       Spinner
     )
 
     const hasTitle = this.props.renderTitle
-    // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
     error(
+      // @ts-expect-error FIXME
       hasTitle,
       '[Spinner] The renderTitle prop is necessary for screen reader support.'
     )

@@ -32,13 +32,12 @@ import {
   getElementType,
   getInteraction,
   passthroughProps,
-  callRenderProp
+  callRenderProp,
+  InteractionType
 } from '@instructure/ui-react-utils'
 import { isActiveElement } from '@instructure/ui-dom-utils'
-
 import { hasVisibleChildren } from '@instructure/ui-a11y-utils'
 import { View } from '@instructure/ui-view'
-import { Flex } from '@instructure/ui-flex'
 
 import {
   withStyle,
@@ -56,8 +55,8 @@ type Props = {
   type?: 'button' | 'submit' | 'reset'
   size?: 'small' | 'medium' | 'large'
   elementRef?: (...args: any[]) => any
-  as?: React.ReactElement
-  interaction?: 'enabled' | 'disabled' | 'readonly'
+  as?: React.ReactElement | string
+  interaction?: InteractionType
   color?: 'primary' | 'primary-inverse' | 'secondary' | 'success' | 'danger'
   focusColor?: 'info' | 'inverse'
   display?: 'inline-block' | 'block'
@@ -241,12 +240,10 @@ class BaseButton extends Component<Props> {
   }
 
   get elementType() {
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
     return getElementType(BaseButton, this.props)
   }
 
   get interaction() {
-    // @ts-expect-error ts-migrate(2739) FIXME: Type 'Readonly<Props> & Readonly<{ children?: Reac... Remove this comment to see the full error message
     return getInteraction({ props: this.props })
   }
 
@@ -344,7 +341,7 @@ class BaseButton extends Component<Props> {
   }
 
   renderChildren() {
-    const { renderIcon, children, textAlign, isCondensed, styles } = this.props
+    const { renderIcon, children, styles } = this.props
 
     const wrappedChildren = <span css={styles.children}>{children}</span>
 
@@ -358,38 +355,21 @@ class BaseButton extends Component<Props> {
     )
 
     const flexChildren = hasOnlyIconVisible ? (
-      <Flex.Item>
+      <span css={styles.iconOnly}>
         {wrappedIcon}
         {children}
-      </Flex.Item>
+      </span>
     ) : (
       [
-        <Flex.Item
-          key="icon"
-          padding={`0 ${isCondensed ? 'xx-small' : 'x-small'} 0 0`}
-        >
+        <span key="icon" css={styles.iconWrapper}>
           {wrappedIcon}
-        </Flex.Item>,
-        <Flex.Item key="children" shouldShrink>
+        </span>,
+        <span key="children" css={styles.childrenWrapper}>
           {wrappedChildren}
-        </Flex.Item>
+        </span>
       ]
     )
-
-    const flexProps = {
-      shouldShrink: true,
-      height: '100%',
-      width: '100%',
-      justifyItems:
-        hasOnlyIconVisible || textAlign === 'center' ? 'center' : 'start'
-    } as {
-      shouldShrink: boolean
-      height: string
-      width: string
-      justifyItems: 'center' | 'start'
-    }
-
-    return <Flex {...flexProps}>{flexChildren}</Flex>
+    return <span css={styles.childrenLayout}>{flexChildren}</span>
   }
 
   render() {
@@ -439,7 +419,6 @@ class BaseButton extends Component<Props> {
         elementRef={this.handleElementRef}
         onClick={this.handleClick}
         onKeyDown={this.handleKeyDown}
-        // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'true' since the... Remove this comment to see the full error message
         role={onClick && as !== 'button' ? 'button' : null}
         tabIndex={onClick && as ? tabIndex || '0' : tabIndex}
         disabled={isDisabled || isReadOnly}

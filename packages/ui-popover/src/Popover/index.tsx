@@ -466,6 +466,19 @@ class Popover extends Component<Props> {
         this._focusRegion.deactivate()
       }
     }
+
+    // since `offsetX`, `offsetY` and `placement` are saved into the state
+    // in the constructor and used from the state later,
+    // we need to update the state if these props change
+    if (
+      this.props.offsetX !== prevProps.offsetX ||
+      this.props.offsetY !== prevProps.offsetY ||
+      this.props.placement !== prevProps.placement
+    ) {
+      this.setState({
+        ...this.computeOffsets(this.placement)
+      })
+    }
   }
 
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'placement' implicitly has an 'any' type... Remove this comment to see the full error message
@@ -695,7 +708,6 @@ class Popover extends Component<Props> {
 
       // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       if (on.indexOf('hover') > -1) {
-        // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
         error(
           !(on === 'hover'),
           '[Popover] Specifying only the `"hover"` trigger limits the visibility' +
@@ -818,7 +830,8 @@ class Popover extends Component<Props> {
           ...viewProps,
           // @ts-expect-error ts-migrate(2322) FIXME: Type '{ borderWidth: string; borderRadius: string;... Remove this comment to see the full error message
           borderWidth: 'small',
-          borderRadius: 'medium'
+          borderRadius: 'medium',
+          ...(color === 'primary-inverse' && { borderColor: 'transparent' })
         }
       }
 

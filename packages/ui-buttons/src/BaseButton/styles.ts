@@ -356,6 +356,58 @@ const generateStyle = (componentTheme, props, state) => {
 
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       ...sizeVariants[size].iconSVG
+    },
+
+    childrenLayout: {
+      label: 'baseButton__childrenLayout',
+      display: 'flex',
+      height: '100%',
+      width: '100%',
+      justifyContent:
+        hasOnlyIconVisible || textAlign === 'center' ? 'center' : 'flex-start',
+      boxSizing: 'border-box',
+      alignItems: 'center',
+      flexDirection: 'row',
+      maxWidth: '100%',
+      overflowX: 'visible',
+      overflowY: 'visible',
+      unicodeBidi: 'isolate'
+    },
+
+    iconOnly: {
+      label: 'baseButton__iconOnly',
+      boxSizing: 'border-box',
+      minWidth: '0.0625rem',
+      flexShrink: 0,
+      maxWidth: '100%',
+      overflowX: 'visible',
+      overflowY: 'visible',
+      unicodeBidi: 'isolate'
+    },
+
+    iconWrapper: {
+      label: 'baseButton__iconWrapper',
+      boxSizing: 'border-box',
+      minWidth: '0.0625rem',
+      paddingInlineEnd: isCondensed
+        ? componentTheme.iconTextGapCondensed
+        : componentTheme.iconTextGap,
+      flexShrink: 0,
+      maxWidth: '100%',
+      overflowX: 'visible',
+      overflowY: 'visible',
+      unicodeBidi: 'isolate'
+    },
+
+    childrenWrapper: {
+      label: 'baseButton__childrenWrapper',
+      boxSizing: 'border-box',
+      minWidth: '0.0625rem',
+      flexShrink: 1,
+      maxWidth: '100%',
+      overflowX: 'visible',
+      overflowY: 'visible',
+      unicodeBidi: 'isolate'
     }
   }
 }
