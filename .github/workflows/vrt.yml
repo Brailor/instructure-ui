@@ -16,13 +16,24 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '15'
-      - id: files
-        name: Print Changed Files
+      - id: changed_files
         uses: jitterbit/get-changed-files@v1
-      - run: |
-          for changed_file in ${{ steps.files.outputs.all }}; do
-            echo "Do something with this ${changed_file}."
+      - name: Calculate changed packages
+        id: changed_packages
+        run: |
+          regexp="ui-[a-z0-9-]*"
+          packages=()
+
+          for changed_file in ${{ steps.changed_files.outputs.all }}; do
+             if [[ $changed_file =~ $regexp ]]; then
+              package_name=$(echo $changed_file | grep -o "$regexp")
+              packages+=($package_name)
+            fi
           done
+          echo "::set-output name=changed_packages::${packages[@]}"
+      - name: Print changed packages
+        run: echo ${{ steps.changed_packages.outputs.changed_packages }}
+
       # - name: Install project dependencies
       #   run: yarn install --check-files
       # - name: Bootstrap project
