@@ -42,5 +42,10 @@ jobs:
           yarn build:storybook
       - name: Publish to Chromatic
         run: |
-          cd ./packages/__examples__/
+          cd ./packages/__examples__/__build__
           ls -al
+      - name: Upload the builded stories directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: builded-storybook-artifact
+          path: ./packages/__examples__/__build__

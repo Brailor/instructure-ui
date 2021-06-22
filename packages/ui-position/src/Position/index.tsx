@@ -68,7 +68,7 @@ type Props = {
   shouldPositionOverTarget?: boolean
   onPositionChanged?: (...args: any[]) => any
   onPositioned?: (...args: any[]) => any
-  test: string
+  test?: string
 }
 
 /**
