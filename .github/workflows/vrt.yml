@@ -31,7 +31,10 @@ jobs:
           for changed_file in ${{ steps.changed_files.outputs.all }}; do
              if [[ $changed_file =~ $regexp ]]; then
               package_name=$(echo $changed_file | grep -o "$regexp")
-              packages+=($package_name)
+
+              if [[ ! " ${packages[@]} " =~ " ${package_name} " ]]; then
+                packages+=($package_name)
+              fi
             fi
           done
           echo "::set-output name=changed_packages::${packages[@]}"
