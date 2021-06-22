@@ -32,26 +32,57 @@ const globby = require('globby')
 const parsePropValues = require('./parsePropValues')
 
 const projectRoot = path.resolve(__dirname, '../../')
-const filesToParse = '**/src/**/*.examples.ts*'
-const files = path.resolve(projectRoot, filesToParse)
+const packages = process.argv.slice(2)
 
-const ignorePaths = ['**/node_modules/**', '**/lib/**', '**/es/**']
-const ignore = ignorePaths.map((file) => '!' + path.resolve(projectRoot, file))
-const componentProps = {}
-globby([files, ...ignore]).then((matches) => {
-  matches.map((filepath) => {
+async function buildExamplesJSON(packagesToBuild = []) {
+  const packages = packagesToBuild.length ? packagesToBuild : ['**']
+  const files = packages.map((package) =>
+    path.resolve(projectRoot, `${package}/src/**/*.examples.ts*`)
+  )
+
+  const ignorePaths = ['**/node_modules/**', '**/lib/**', '**/es/**']
+  const ignore = ignorePaths.map(
+    (file) => '!' + path.resolve(projectRoot, file)
+  )
+
+  const matches = await globby([...files, ...ignore])
+  const componentProps = matches.reduce((result, absoluteExampleFilePath) => {
     // path to the component that is tested, e.g. /ui-tag/src/Tag/index.js
-    const componentPath = path.resolve(path.dirname(filepath), '../index.tsx')
+    const componentPath = path.resolve(
+      path.dirname(absoluteExampleFilePath),
+      '../index.tsx'
+    )
+    const componentFilePathParts = componentPath.split('/')
+    const exampleFilePathParts = absoluteExampleFilePath.split('/')
+    const [packageName] = componentFilePathParts.filter((path) =>
+      path.startsWith('ui-')
+    )
+
     const componentSource = fs.readFileSync(componentPath)
     // contains all the prop values and its variants
     const generatedPropValues = parsePropValues(componentSource, componentPath)
-    const pathParts = componentPath.split('/')
-    const componentName = pathParts[pathParts.length - 2]
-    componentProps[componentName] = generatedPropValues
-  })
+    const packageIndex = exampleFilePathParts.findIndex(
+      (value) => value === packageName
+    )
+    const exampleFilePath = exampleFilePathParts.slice(packageIndex).join('/')
+    const componentName =
+      componentFilePathParts[componentFilePathParts.length - 2]
+
+    return {
+      ...result,
+      [componentName]: {
+        generatedPropValues,
+        exampleFilePath
+      }
+    }
+  }, {})
+
   const everything = JSON.stringify(componentProps)
+
   fs.writeFileSync(outputName, everything)
 
   // eslint-disable-next-line no-console
   console.log('finished generating example prop combinations.')
-})
+}
+
+buildExamplesJSON(packages)
