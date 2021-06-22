@@ -294,7 +294,6 @@ class SimpleSelect extends Component<Props> {
   }
 
   get interaction() {
-    // @ts-expect-error ts-migrate(2739) FIXME: Type 'Readonly<Props> & Readonly<{ children?: Reac... Remove this comment to see the full error message
     return getInteraction({ props: this.props })
   }
 
@@ -508,6 +507,25 @@ class SimpleSelect extends Component<Props> {
       renderAfterLabel,
       ...rest
     } = option.props
+
+    const isDisabled = option.props.isDisabled
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'highlightedOptionId' does not exist on t... Remove this comment to see the full error message
+    const isSelected = id === this.state.selectedOptionId
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'highlightedOptionId' does not exist on t... Remove this comment to see the full error message
+    const isHighlighted = id === this.state.highlightedOptionId
+
+    const getRenderLabel = (renderLabel: any) => {
+      return typeof renderLabel === 'function'
+        ? renderLabel.bind(null, {
+            id,
+            isDisabled,
+            isSelected,
+            isHighlighted,
+            children
+          })
+        : renderLabel
+    }
+
     return (
       <Select.Option
         id={id}
@@ -519,8 +537,8 @@ class SimpleSelect extends Component<Props> {
         // @ts-expect-error ts-migrate(2339) FIXME: Property 'selectedOptionId' does not exist on type... Remove this comment to see the full error message
         isSelected={id === this.state.selectedOptionId}
         isDisabled={option.props.isDisabled}
-        renderBeforeLabel={renderBeforeLabel}
-        renderAfterLabel={renderAfterLabel}
+        renderBeforeLabel={getRenderLabel(renderBeforeLabel)}
+        renderAfterLabel={getRenderLabel(renderAfterLabel)}
         {...passthroughProps(rest)}
       >
         {children}
@@ -585,7 +603,6 @@ class SimpleSelect extends Component<Props> {
         size={size}
         assistiveText={assistiveText}
         placeholder={placeholder}
-        // @ts-expect-error FIXME:
         interaction={this.interaction}
         isRequired={isRequired}
         isInline={isInline}

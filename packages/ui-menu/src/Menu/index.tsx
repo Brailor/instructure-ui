@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 /** @jsx jsx */
-import { Children, Component } from 'react'
+import { Children, Component, ReactElement } from 'react'
 import PropTypes from 'prop-types'
 import keycode from 'keycode'
 
@@ -80,6 +80,8 @@ type Props = {
   type?: 'flyout'
   id?: string
   withArrow?: boolean
+  offsetX?: string | number
+  offsetY?: string | number
 }
 
 /**
@@ -207,7 +209,17 @@ class Menu extends Component<Props> {
     /**
      * Whether or not an arrow pointing to the trigger should be rendered
      */
-    withArrow: PropTypes.bool
+    withArrow: PropTypes.bool,
+    /**
+     * The horizontal offset for the positioned content.
+     * Works only if `trigger` is provided.
+     */
+    offsetX: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    /**
+     * The vertical offset for the positioned content.
+     * Works only if `trigger` is provided.
+     */
+    offsetY: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
   }
 
   static defaultProps = {
@@ -245,7 +257,9 @@ class Menu extends Component<Props> {
     show: undefined,
     id: undefined,
     type: undefined,
-    withArrow: true
+    withArrow: true,
+    offsetX: 0,
+    offsetY: 0
   }
 
   static Item = MenuItem
@@ -290,7 +304,6 @@ class Menu extends Component<Props> {
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'item' implicitly has an 'any' type.
   removeMenuItem = (item) => {
     const index = this.getMenuItemIndex(item)
-    // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
     error(index >= 0, '[Menu] Could not find registered menu item.')
     if (index >= 0) {
       this._menuItems.splice(index, 1)
@@ -428,7 +441,6 @@ class Menu extends Component<Props> {
       // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       this._menu.focus()
     } else {
-      // @ts-expect-error ts-migrate(2555) FIXME: Expected at least 5 arguments, but got 2.
       error(
         // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         this._trigger && this._trigger.focus,
@@ -517,7 +529,7 @@ class Menu extends Component<Props> {
       if (matchComponentTypes(child, ['MenuItem'])) {
         return (
           <li role="none">
-            {safeCloneElement(child, {
+            {safeCloneElement(child as ReactElement, {
               controls,
               // @ts-expect-error ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
               disabled: disabled || child.props.disabled,
@@ -534,7 +546,7 @@ class Menu extends Component<Props> {
       if (matchComponentTypes(child, ['MenuItemGroup'])) {
         return (
           <li role="none">
-            {safeCloneElement(child, {
+            {safeCloneElement(child as ReactElement, {
               controls,
               // @ts-expect-error ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
               disabled: disabled || child.props.disabled,
@@ -554,7 +566,7 @@ class Menu extends Component<Props> {
 
         return (
           <li role="none">
-            {safeCloneElement(child, {
+            {safeCloneElement(child as ReactElement, {
               type: 'flyout',
               controls,
               disabled: submenuDisabled,
@@ -652,7 +664,9 @@ class Menu extends Component<Props> {
       disabled,
       onDismiss,
       onFocus,
-      onMouseOver
+      onMouseOver,
+      offsetX,
+      offsetY
     } = this.props
 
     return trigger ? (
@@ -675,6 +689,8 @@ class Menu extends Component<Props> {
         shouldReturnFocus
         onFocus={onFocus}
         onMouseOver={onMouseOver}
+        offsetX={offsetX}
+        offsetY={offsetY}
         ref={(el) => {
           // @ts-expect-error ts-migrate(2322) FIXME: Type 'Popover | null' is not assignable to type 'n... Remove this comment to see the full error message
           this._popover = el
@@ -682,7 +698,7 @@ class Menu extends Component<Props> {
             popoverRef(el)
           }
         }}
-        renderTrigger={safeCloneElement(trigger, {
+        renderTrigger={safeCloneElement(trigger as ReactElement, {
           // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'el' implicitly has an 'any' type.
           ref: (el) => {
             this._trigger = el

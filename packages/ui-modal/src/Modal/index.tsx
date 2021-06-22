@@ -23,7 +23,7 @@
  */
 
 /** @jsx jsx */
-import { Children, Component } from 'react'
+import { Children, Component, ReactElement } from 'react'
 import PropTypes from 'prop-types'
 
 import { Dialog } from '@instructure/ui-dialog'
@@ -58,7 +58,7 @@ type Props = {
   defaultFocusElement?: React.ReactElement | ((...args: any[]) => any)
   shouldReturnFocus?: boolean
   shouldCloseOnDocumentClick?: boolean
-  onOpen?: (...args: any[]) => any
+  onOpen?: (DOMNode: HTMLSpanElement | null) => any
   onClose?: (...args: any[]) => any
   onDismiss?: (...args: any[]) => any
   contentRef?: (...args: any[]) => any
@@ -273,6 +273,8 @@ class Modal extends Component<Props> {
     }
   }
 
+  _DOMNode: HTMLSpanElement | null = null
+
   componentDidMount() {
     // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
     this.props.makeStyles()
@@ -295,7 +297,6 @@ class Modal extends Component<Props> {
   }
 
   get DOMNode() {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property '_DOMNode' does not exist on type 'Modal'... Remove this comment to see the full error message
     return this._DOMNode
   }
 
@@ -307,13 +308,11 @@ class Modal extends Component<Props> {
     }
   }
 
-  set DOMNode(el) {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property '_DOMNode' does not exist on type 'Modal'... Remove this comment to see the full error message
+  set DOMNode(el: HTMLSpanElement | null) {
     this._DOMNode = el
   }
 
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'DOMNode' implicitly has an 'any' type.
-  handlePortalOpen = (DOMNode) => {
+  handlePortalOpen = (DOMNode: HTMLSpanElement | null) => {
     this.DOMNode = DOMNode
   }
 
@@ -339,13 +338,13 @@ class Modal extends Component<Props> {
       if (!child) return // ignore null, falsy children
 
       if (matchComponentTypes(child, [ModalBody])) {
-        return safeCloneElement(child, {
+        return safeCloneElement(child as ReactElement, {
           variant: variant,
           // @ts-expect-error ts-migrate(2339) FIXME: Property 'props' does not exist on type 'string | ... Remove this comment to see the full error message
           overflow: child.props.overflow || overflow
         })
       } else {
-        return safeCloneElement(child, {
+        return safeCloneElement(child as ReactElement, {
           variant: variant
         })
       }
