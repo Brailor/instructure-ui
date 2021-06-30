@@ -17,5 +17,5 @@ jobs:
           echo ${{ github.repository }}
 
       - name: test if cancel
-        if: ${{ !cancelled() }}
+        if: ${{ steps.checking.outcome == 'success' }}
         run: echo "canceled"
