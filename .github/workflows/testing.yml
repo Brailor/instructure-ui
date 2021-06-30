@@ -1,0 +1,12 @@
+name: "Test ENV var check"
+
+on:
+  push:
+    branches: [ master ]
+jobs:
+  test_env_vars:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check with `if` in workflow
+        if: ${{ secrets.NETLIFY_AUTH_TOKEN }} && ${{ secrets.NETLIFY_SITE_ID }}
+        run: echo "valid secrets are present!"
