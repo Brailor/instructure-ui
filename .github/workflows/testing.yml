@@ -3,6 +3,8 @@ name: "Test ENV var check"
 on:
   push:
     branches: [ master ]
+  pull_request:
+    branches: [ master ]
 jobs:
   test_env_vars:
     runs-on: ubuntu-latest
