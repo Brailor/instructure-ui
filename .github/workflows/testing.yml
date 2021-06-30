@@ -8,5 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check with `if` in workflow
-        if: ${{ secrets.NETLIFY_AUTH_TOKEN }} && ${{ secrets.NETLIFY_SITE_ID }}
-        run: echo "valid secrets are present!"
+
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          echo ${{ github.event.pull_request.head.repo.full_name }}
+          echo ${{ github.repository }}
