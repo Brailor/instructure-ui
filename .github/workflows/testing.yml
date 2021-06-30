@@ -10,11 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check with `if` in workflow
+        id: checking
         if: github.event.pull_request.head.repo.full_name != github.repository
         run: |
           echo ${{ github.event.pull_request.head.repo.full_name }}
           echo ${{ github.repository }}
 
       - name: test if cancel
-        if: ${{ success() }}
+        if: ${{ !cancelled() }}
         run: echo "canceled"
